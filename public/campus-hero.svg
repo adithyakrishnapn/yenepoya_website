@@ -1,0 +1,42 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17324D"/>
+      <stop offset="0.55" stop-color="#0E5C52"/>
+      <stop offset="1" stop-color="#C68A2F"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="220" y1="270" x2="980" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.06"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="1200" height="900" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="18" result="effect1_foregroundBlur_1_1"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="900" rx="48" fill="url(#bg)"/>
+  <circle cx="960" cy="160" r="120" fill="#FFFFFF" fill-opacity="0.15"/>
+  <circle cx="220" cy="170" r="80" fill="#FFFFFF" fill-opacity="0.08"/>
+  <path d="M0 720C150 650 260 670 392 714C544 765 679 798 824 778C958 760 1056 708 1200 650V900H0V720Z" fill="#F4F0E8" fill-opacity="0.18"/>
+  <rect x="110" y="160" width="980" height="620" rx="40" fill="url(#glass)" stroke="#FFFFFF" stroke-opacity="0.18" filter="url(#shadow)"/>
+  <rect x="190" y="270" width="276" height="320" rx="18" fill="#F7F2EA" fill-opacity="0.92"/>
+  <rect x="486" y="220" width="228" height="370" rx="18" fill="#FFFFFF" fill-opacity="0.96"/>
+  <rect x="734" y="290" width="248" height="300" rx="18" fill="#F7F2EA" fill-opacity="0.92"/>
+  <path d="M360 180L470 250H250L360 180Z" fill="#C68A2F"/>
+  <path d="M600 140L725 220H475L600 140Z" fill="#E7D3AE"/>
+  <path d="M858 215L954 290H762L858 215Z" fill="#C68A2F"/>
+  <rect x="230" y="330" width="40" height="200" rx="10" fill="#0E5C52"/>
+  <rect x="290" y="330" width="40" height="200" rx="10" fill="#0E5C52"/>
+  <rect x="350" y="330" width="40" height="200" rx="10" fill="#0E5C52"/>
+  <rect x="530" y="290" width="40" height="240" rx="10" fill="#17324D"/>
+  <rect x="590" y="290" width="40" height="240" rx="10" fill="#17324D"/>
+  <rect x="650" y="290" width="40" height="240" rx="10" fill="#17324D"/>
+  <rect x="774" y="350" width="38" height="180" rx="10" fill="#0E5C52"/>
+  <rect x="832" y="350" width="38" height="180" rx="10" fill="#0E5C52"/>
+  <rect x="890" y="350" width="38" height="180" rx="10" fill="#0E5C52"/>
+  <rect x="330" y="610" width="540" height="42" rx="21" fill="#17324D" fill-opacity="0.85"/>
+  <text x="600" y="638" text-anchor="middle" fill="white" font-family="Georgia, serif" font-size="24" font-weight="700">Yenepoya University Mudipu</text>
+  <rect x="170" y="690" width="860" height="62" rx="31" fill="#FFFFFF" fill-opacity="0.15"/>
+  <text x="600" y="730" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="20" font-weight="600" letter-spacing="1.2">Arts • Science • Commerce • Management</text>
+</svg>
