@@ -37,8 +37,8 @@ export function SiteFooter() {
                 <Link href="/admin/login">Admin Login</Link>
               </li>
               <li>
-                <Link href="https://wa.me/918848046116?text=Hello%20I%20need%20more%20information">
-                  WhatsApp Support
+                <Link href="/contact">
+                  Admissions Support
                 </Link>
               </li>
             </ul>
@@ -49,8 +49,6 @@ export function SiteFooter() {
             <ul>
               <li>University Road, Deralakatte</li>
               <li>Mangaluru, Karnataka 575018</li>
-              <li><Link href="tel:+918848046116">+91 88480 46116</Link></li>
-              <li><Link href="tel:+917994228008">+91 79942 28008</Link></li>
               <li><Link href="mailto:info@mudipu.yenepoya.edu.in">info@mudipu.yenepoya.edu.in</Link></li>
             </ul>
           </div>

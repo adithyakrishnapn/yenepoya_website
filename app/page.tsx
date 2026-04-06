@@ -35,6 +35,29 @@ export const metadata: Metadata = {
   }
 };
 
+const homeFeeStructure = [
+  {
+    program: "BCA (Artificial Intelligence and DevOps)",
+    duration: "3 Years",
+    bookingAmount: "₹26,000"
+  },
+  {
+    program: "BCA (Cyber Security and Ethical Hacking)",
+    duration: "3 Years",
+    bookingAmount: "₹26,000"
+  },
+  {
+    program: "BBA (Aviation and Logistics)",
+    duration: "3 Years",
+    bookingAmount: "₹26,000"
+  },
+  {
+    program: "MBA (HR, Marketing, Finance, Logistics)",
+    duration: "2 Years",
+    bookingAmount: "₹26,000"
+  }
+];
+
 export default async function HomePage() {
   const blogs = await getPublishedBlogs();
   const featuredBlogs = blogs.slice(0, 3);
@@ -196,6 +219,33 @@ export default async function HomePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FEE STRUCTURE SECTION */}
+      <section className="section" style={{ background: "#f8fafc" }}>
+        <div className="container">
+          <div className="section-header">
+            <div className="section-label">Fee Structure</div>
+            <h2 className="section-title">Program Booking Amount at a Glance</h2>
+            <p className="section-description">
+              Transparent fee preview for popular programs. Standard booking amount currently listed across programs is <strong>₹26,000</strong>.
+            </p>
+          </div>
+
+          <div className="grid grid-2" style={{ gap: "1.2rem" }}>
+            {homeFeeStructure.map((item) => (
+              <article key={item.program} className="card card-pad" style={{ display: "grid", gap: "0.6rem" }}>
+                <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "1.2rem" }}>{item.program}</h3>
+                <p className="text-soft" style={{ margin: 0 }}>Duration: {item.duration}</p>
+                <p style={{ margin: 0, fontWeight: 700, color: "var(--accent-gold)" }}>Booking Amount: {item.bookingAmount}</p>
+              </article>
+            ))}
+          </div>
+
+          <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+            <Link href="/courses" className="btn btn-outline">View Full Fee Structure</Link>
           </div>
         </div>
       </section>

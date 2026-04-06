@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 export function LeadPopup() {
   const [show, setShow] = useState(false);
   const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [course, setCourse] = useState("");
@@ -31,7 +30,14 @@ export function LeadPopup() {
       const response = await fetch("/api/enquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, username, email, phone, course })
+        body: JSON.stringify({
+          source: "First visit popup enquiry",
+          name,
+          username: name,
+          email,
+          phone,
+          course
+        })
       });
 
       const data = (await response.json()) as { error?: string; success?: boolean };
@@ -54,29 +60,81 @@ export function LeadPopup() {
   if (!show) return null;
 
   return (
-    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.8)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
-      <div className="card" style={{ background: "white", width: "100%", maxWidth: "450px", position: "relative" }}>
-        
-        <button 
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: "rgba(7, 24, 36, 0.66)",
+        backdropFilter: "blur(4px)",
+        zIndex: 9999,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "1rem"
+      }}
+    >
+      <div
+        style={{
+          background: "linear-gradient(180deg, #ffffff 0%, #f8fcff 100%)",
+          width: "min(560px, 94vw)",
+          maxHeight: "90vh",
+          overflowY: "auto",
+          borderRadius: "22px",
+          border: "1px solid rgba(15, 76, 129, 0.16)",
+          boxShadow: "0 28px 64px rgba(8, 35, 57, 0.24)",
+          position: "relative"
+        }}
+      >
+        <button
+          type="button"
+          aria-label="Close popup"
           onClick={() => { localStorage.setItem("hasSeenLeadPopup", "true"); setShow(false); }}
-          style={{ position: "absolute", top: "1rem", right: "1rem", background: "none", border: "none", cursor: "pointer", fontSize: "1.5rem" }}
+          style={{
+            position: "absolute",
+            top: "0.9rem",
+            right: "0.9rem",
+            width: "2rem",
+            height: "2rem",
+            borderRadius: "999px",
+            border: "1px solid rgba(15, 76, 129, 0.18)",
+            background: "rgba(255,255,255,0.96)",
+            color: "var(--primary)",
+            cursor: "pointer",
+            fontSize: "1.15rem",
+            lineHeight: 1,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
         >
           ×
         </button>
 
-        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          <h2 style={{ fontSize: "1.5rem", color: "var(--primary)", marginBottom: "0.25rem" }}>Welcome to Yenepoya</h2>
-          <p className="text-soft" style={{ fontSize: "0.9rem" }}>Share your details to get course guidance and admissions support.</p>
+        <div
+          style={{
+            padding: "1.4rem 1.4rem 1rem",
+            borderBottom: "1px solid rgba(15, 76, 129, 0.1)",
+            background: "linear-gradient(135deg, rgba(21, 101, 160, 0.12) 0%, rgba(0, 167, 204, 0.09) 100%)"
+          }}
+        >
+          <p style={{ margin: 0, fontSize: "0.78rem", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 700, color: "var(--primary)" }}>
+            Admissions Assistance
+          </p>
+          <h2 style={{ fontSize: "1.45rem", color: "var(--primary)", margin: "0.25rem 0 0.35rem", lineHeight: 1.2 }}>
+            Welcome to Yenepoya
+          </h2>
+          <p className="text-soft" style={{ margin: 0, fontSize: "0.9rem" }}>
+            Share your details and our counselor will contact you with course and admission guidance.
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3" style={{ padding: "1.2rem 1.4rem 1.4rem" }}>
           <div>
             <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Full Name</label>
             <input type="text" required className="input" style={{ padding: "0.5rem" }} placeholder="Enter Full Name" value={name} onChange={(e) => setName(e.target.value)} />
-          </div>
-          <div>
-            <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Username</label>
-            <input type="text" required className="input" style={{ padding: "0.5rem" }} placeholder="Choose a Username" value={username} onChange={(e) => setUsername(e.target.value)} />
           </div>
           <div>
             <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Email Address</label>
@@ -84,7 +142,7 @@ export function LeadPopup() {
           </div>
           <div>
             <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Phone Number</label>
-            <input type="tel" required className="input" style={{ padding: "0.5rem" }} placeholder="+91 88480 46116" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <input type="tel" required className="input" style={{ padding: "0.5rem" }} placeholder="Enter phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
           <div>
             <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Course</label>
@@ -100,7 +158,20 @@ export function LeadPopup() {
           </div>
           {error ? <p style={{ margin: 0, color: "#b42318", fontSize: "0.9rem" }}>{error}</p> : null}
           {message ? <p style={{ margin: 0, color: "var(--primary)", fontSize: "0.9rem" }}>{message}</p> : null}
-          <button type="submit" className="button button-primary mt-2" style={{ width: "100%" }}>
+          <button
+            type="submit"
+            className="button button-primary mt-2"
+            style={{
+              width: "100%",
+              padding: "0.8rem 1rem",
+              borderRadius: "12px",
+              border: "none",
+              fontWeight: 700,
+              background: "linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)",
+              color: "#fff",
+              boxShadow: "0 10px 24px rgba(15, 76, 129, 0.24)"
+            }}
+          >
             {submitting ? "Sending..." : "Submit Details"}
           </button>
         </form>

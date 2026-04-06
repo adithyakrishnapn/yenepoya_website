@@ -66,7 +66,7 @@ export function ContactEnquiryForm() {
         </div>
         <div>
           <label className="form-label" style={{ fontSize: "0.85rem", marginBottom: "0.3rem", display: "block" }}>Phone</label>
-          <input type="tel" className="input" placeholder="+91" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <input type="tel" className="input" placeholder="Enter phone number" required value={phone} onChange={(e) => setPhone(e.target.value)} />
         </div>
       </div>
       <div>

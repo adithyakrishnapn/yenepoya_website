@@ -28,7 +28,7 @@ export const siteConfig = {
     "research and innovation"
   ],
   contactEmail: "admissions@yenepoyauniversity.online",
-  phone: "+91 88480 46116",
+  phone: "",
   ogImage: "/assets/hero_campus_banner.png"
 };
 

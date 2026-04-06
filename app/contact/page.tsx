@@ -46,9 +46,8 @@ export default function ContactPage() {
               Whether you have questions about our specialized PG programs, admissions pathways, or campus facilities, our dedicated admissions council is available round the clock.
             </p>
             <div className="card card-pad" style={{ marginTop: "1.5rem", display: "grid", gap: "0.75rem" }}>
-              <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "1.3rem" }}>Call us directly</h3>
-              <a href="tel:+918848046116" className="btn btn-outline" style={{ width: "fit-content" }}>+91 88480 46116</a>
-              <a href="tel:+917994228008" className="btn btn-outline" style={{ width: "fit-content" }}>+91 79942 28008</a>
+              <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "1.3rem" }}>Write to us directly</h3>
+              <a href="mailto:info@mudipu.yenepoya.edu.in" className="btn btn-outline" style={{ width: "fit-content" }}>info@mudipu.yenepoya.edu.in</a>
             </div>
           </div>
           <div className="card card-pad" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

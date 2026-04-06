@@ -85,7 +85,7 @@ export function AdmissionsApplyForm() {
         </div>
         <div>
           <label className="form-label" style={{ display: "block", marginBottom: "0.35rem" }}>Mobile Number</label>
-          <input className="input" type="tel" placeholder="+91" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <input className="input" type="tel" placeholder="Enter phone number" required value={phone} onChange={(e) => setPhone(e.target.value)} />
         </div>
       </div>
 

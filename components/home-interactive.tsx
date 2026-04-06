@@ -37,7 +37,7 @@ export function OTPEnquiryForm() {
               type="tel" 
               required 
               className="input" 
-              placeholder="+91 88480 46116" 
+              placeholder="Enter phone number" 
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
@@ -84,7 +84,7 @@ export function CourseVerifyGate({ courses }: { courses: { title: string; durati
         >
           <input 
             type="tel" 
-            placeholder="+91 88480 46116" 
+            placeholder="Enter phone number" 
             className="input" 
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
