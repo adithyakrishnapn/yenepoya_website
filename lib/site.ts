@@ -5,7 +5,7 @@ function firstNonEmpty(...values: Array<string | undefined>) {
     }
   }
 
-  return "https://mudipu.yenepoyauniversity.online";
+  return "https://www.yenepoyamudipu.in";
 }
 
 export const siteConfig = {
@@ -14,7 +14,7 @@ export const siteConfig = {
   domain: firstNonEmpty(
     process.env.NEXT_PUBLIC_APP_URL,
     process.env.NEXT_PUBLIC_SITE_URL,
-    "https://mudipu.yenepoyauniversity.online"
+    "https://www.yenepoyamudipu.in"
   ),
   description:
     "Yenepoya admissions support portal with program discovery, counselling, and SEO-focused academic content.",

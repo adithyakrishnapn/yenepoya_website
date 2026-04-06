@@ -88,7 +88,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
           <span className="pill">{blog.category}</span>
           <span style={{ color: "var(--text-soft)" }}>{publishedDate}</span>
         </div>
-        <h1 className="article-title" style={{ fontSize: "clamp(2.8rem, 6vw, 5.6rem)", margin: 0, maxWidth: "12ch" }}>
+        <h1 className="article-title">
           {blog.title}
         </h1>
         <p className="section-copy" style={{ marginBottom: 0 }}>{blog.excerpt}</p>
