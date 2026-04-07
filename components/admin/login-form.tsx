@@ -32,11 +32,11 @@ export function AdminLoginForm() {
     <form onSubmit={onSubmit} className="grid" style={{ gap: "0.9rem" }}>
       <label className="grid" style={{ gap: 6 }}>
         <span>Email</span>
-        <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={fieldStyle} />
+        <input required type="email" placeholder="admin@yenepoya.edu.in" value={email} onChange={(e) => setEmail(e.target.value)} style={fieldStyle} />
       </label>
       <label className="grid" style={{ gap: 6 }}>
         <span>Password</span>
-        <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={fieldStyle} />
+        <input required type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} style={fieldStyle} />
       </label>
       {error ? <p style={{ margin: 0, color: "#b42318" }}>{error}</p> : null}
       <button className="button button-primary" type="submit" disabled={submitting}>

@@ -6,6 +6,7 @@ export function AdmissionsApplyForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [place, setPlace] = useState("");
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
   const [state, setState] = useState("");
@@ -34,6 +35,7 @@ export function AdmissionsApplyForm() {
           username: name,
           email,
           phone,
+          place,
           course,
           message,
           dob,
@@ -56,6 +58,7 @@ export function AdmissionsApplyForm() {
       setName("");
       setEmail("");
       setPhone("");
+      setPlace("");
       setDob("");
       setGender("");
       setState("");
@@ -87,6 +90,11 @@ export function AdmissionsApplyForm() {
           <label className="form-label" style={{ display: "block", marginBottom: "0.35rem" }}>Mobile Number</label>
           <input className="input" type="tel" placeholder="Enter phone number" required value={phone} onChange={(e) => setPhone(e.target.value)} />
         </div>
+      </div>
+
+      <div>
+        <label className="form-label" style={{ display: "block", marginBottom: "0.35rem" }}>Place</label>
+        <input className="input" type="text" placeholder="Enter your city or place" required value={place} onChange={(e) => setPlace(e.target.value)} />
       </div>
 
       <div className="grid grid-2" style={{ gap: "0.8rem" }}>

@@ -9,6 +9,7 @@ type EnquiryPayload = {
   username?: string;
   email?: string;
   phone?: string;
+  place?: string;
   course?: string;
   message?: string;
   dob?: string;
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest) {
   const username = body.username?.trim();
   const email = body.email?.trim();
   const phone = body.phone?.trim();
+  const place = body.place?.trim();
   const course = body.course?.trim();
   const source = body.source?.trim() || "Website enquiry";
 
@@ -53,6 +55,7 @@ export async function POST(request: NextRequest) {
     ["Username", username],
     ["Email", email],
     ["Phone", phone],
+    ["Place", place],
     ["Course", course],
     ["Message", body.message?.trim()],
     ["Date of Birth", body.dob?.trim()],

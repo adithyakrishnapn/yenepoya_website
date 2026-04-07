@@ -27,7 +27,7 @@ export const siteConfig = {
     "degree programs",
     "research and innovation"
   ],
-  contactEmail: "admissions@yenepoyauniversity.online",
+  contactEmail: "yiascmmudipu@gmail.com",
   phone: "",
   ogImage: "/assets/hero_campus_banner.png"
 };

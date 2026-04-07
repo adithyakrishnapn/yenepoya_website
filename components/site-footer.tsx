@@ -49,7 +49,7 @@ export function SiteFooter() {
             <ul>
               <li>University Road, Deralakatte</li>
               <li>Mangaluru, Karnataka 575018</li>
-              <li><Link href="mailto:info@mudipu.yenepoya.edu.in">info@mudipu.yenepoya.edu.in</Link></li>
+              <li><Link href={`mailto:${siteConfig.contactEmail}`}>{siteConfig.contactEmail}</Link></li>
             </ul>
           </div>
         </div>

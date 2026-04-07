@@ -76,40 +76,40 @@ export function BlogEditor() {
       <div className="grid grid-2">
         <label className="grid" style={{ gap: 6 }}>
           <span>Title</span>
-          <input required value={title} onChange={(event) => { const nextTitle = event.target.value; setTitle(nextTitle); if (!slug) { setSlug(slugify(nextTitle)); } }} style={fieldStyle} />
+          <input required placeholder="Enter blog title" value={title} onChange={(event) => { const nextTitle = event.target.value; setTitle(nextTitle); if (!slug) { setSlug(slugify(nextTitle)); } }} style={fieldStyle} />
         </label>
         <label className="grid" style={{ gap: 6 }}>
           <span>Slug</span>
-          <input required value={computedSlug} onChange={(event) => setSlug(slugify(event.target.value))} style={fieldStyle} />
+          <input required placeholder="blog-post-slug" value={computedSlug} onChange={(event) => setSlug(slugify(event.target.value))} style={fieldStyle} />
         </label>
       </div>
       <div className="grid grid-2">
         <label className="grid" style={{ gap: 6 }}>
           <span>Category</span>
-          <input value={category} onChange={(event) => setCategory(event.target.value)} style={fieldStyle} />
+          <input placeholder="Campus Life" value={category} onChange={(event) => setCategory(event.target.value)} style={fieldStyle} />
         </label>
         <label className="grid" style={{ gap: 6 }}>
           <span>Excerpt</span>
-          <input required value={excerpt} onChange={(event) => setExcerpt(event.target.value)} style={fieldStyle} />
+          <input required placeholder="Write a short summary for the blog card" value={excerpt} onChange={(event) => setExcerpt(event.target.value)} style={fieldStyle} />
         </label>
       </div>
       <div className="grid grid-2">
         <label className="grid" style={{ gap: 6 }}>
           <span>SEO title</span>
-          <input value={seoTitle} onChange={(event) => setSeoTitle(event.target.value)} style={fieldStyle} />
+          <input placeholder="SEO title (optional)" value={seoTitle} onChange={(event) => setSeoTitle(event.target.value)} style={fieldStyle} />
         </label>
         <label className="grid" style={{ gap: 6 }}>
           <span>SEO description</span>
-          <input value={seoDescription} onChange={(event) => setSeoDescription(event.target.value)} style={fieldStyle} />
+          <input placeholder="SEO description (optional)" value={seoDescription} onChange={(event) => setSeoDescription(event.target.value)} style={fieldStyle} />
         </label>
       </div>
       <label className="grid" style={{ gap: 6 }}>
         <span>SEO keywords</span>
-        <input value={seoKeywords} onChange={(event) => setSeoKeywords(event.target.value)} style={fieldStyle} />
+        <input placeholder="keyword one, keyword two, keyword three" value={seoKeywords} onChange={(event) => setSeoKeywords(event.target.value)} style={fieldStyle} />
       </label>
       <label className="grid" style={{ gap: 6 }}>
         <span>HTML content</span>
-        <textarea required rows={16} value={htmlContent} onChange={(event) => setHtmlContent(event.target.value)} style={{ ...fieldStyle, minHeight: 320, resize: "vertical" }} />
+        <textarea required rows={16} placeholder="<h2>Start writing your blog content in HTML...</h2>" value={htmlContent} onChange={(event) => setHtmlContent(event.target.value)} style={{ ...fieldStyle, minHeight: 320, resize: "vertical" }} />
       </label>
       <div className="card card-pad" style={{ background: "rgba(14,92,82,0.06)" }}>
         <strong>Preview</strong>

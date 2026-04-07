@@ -47,7 +47,7 @@ export default function ContactPage() {
             </p>
             <div className="card card-pad" style={{ marginTop: "1.5rem", display: "grid", gap: "0.75rem" }}>
               <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "1.3rem" }}>Write to us directly</h3>
-              <a href="mailto:info@mudipu.yenepoya.edu.in" className="btn btn-outline" style={{ width: "fit-content" }}>info@mudipu.yenepoya.edu.in</a>
+              <a href={`mailto:${siteConfig.contactEmail}`} className="btn btn-outline" style={{ width: "fit-content" }}>{siteConfig.contactEmail}</a>
             </div>
           </div>
           <div className="card card-pad" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

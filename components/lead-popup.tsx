@@ -6,6 +6,7 @@ export function LeadPopup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [place, setPlace] = useState("");
   const [course, setCourse] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
@@ -36,6 +37,7 @@ export function LeadPopup() {
           username: name,
           email,
           phone,
+          place,
           course
         })
       });
@@ -143,6 +145,10 @@ export function LeadPopup() {
           <div>
             <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Phone Number</label>
             <input type="tel" required className="input" style={{ padding: "0.5rem" }} placeholder="Enter phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          </div>
+          <div>
+            <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Place</label>
+            <input type="text" required className="input" style={{ padding: "0.5rem" }} placeholder="Enter your city or place" value={place} onChange={(e) => setPlace(e.target.value)} />
           </div>
           <div>
             <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Course</label>

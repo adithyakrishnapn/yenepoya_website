@@ -6,6 +6,7 @@ export function ContactEnquiryForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [place, setPlace] = useState("");
   const [course, setCourse] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -28,6 +29,7 @@ export function ContactEnquiryForm() {
           username: name,
           email,
           phone,
+          place,
           course,
           message
         })
@@ -44,6 +46,7 @@ export function ContactEnquiryForm() {
       setName("");
       setEmail("");
       setPhone("");
+      setPlace("");
       setCourse("");
       setMessage("");
     } catch (submissionError) {
@@ -70,8 +73,12 @@ export function ContactEnquiryForm() {
         </div>
       </div>
       <div>
+        <label className="form-label" style={{ fontSize: "0.85rem", marginBottom: "0.3rem", display: "block" }}>Place</label>
+        <input type="text" className="input" placeholder="Enter your city or place" required value={place} onChange={(e) => setPlace(e.target.value)} />
+      </div>
+      <div>
         <label className="form-label" style={{ fontSize: "0.85rem", marginBottom: "0.3rem", display: "block" }}>Interested Course</label>
-        <select className="input" value={course} onChange={(e) => setCourse(e.target.value)}>
+        <select className="input" value={course} onChange={(e) => setCourse(e.target.value)} required>
           <option value="" disabled>Select a course</option>
           <option value="BCA Artificial Intelligence & Cyber Security">BCA (Artificial Intelligence & Cyber Security)</option>
           <option value="BCA Cloud Computing & DevOps">BCA (Cloud Computing & DevOps)</option>
