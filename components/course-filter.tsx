@@ -242,7 +242,27 @@ export function CourseFilter({ courses }: { courses: { title: string, duration: 
                 <span className="badge">Duration: {course.duration}</span>
                 <span style={{ fontWeight: 600, color: "var(--accent-gold)" }}>Booking Amount: {course.price}</span>
               </div>
-              <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "var(--primary)", fontWeight: 600 }}>👆 Click to view detailed fees</p>
+              <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "var(--primary)", fontWeight: 600, display: "none" }}>👆 Click to view detailed fees</p>
+              <button
+                onClick={() => setSelectedCourse(course)}
+                style={{
+                  marginTop: "0.75rem",
+                  padding: "0.7rem 1rem",
+                  background: "var(--accent-gold)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontSize: "0.9rem",
+                  width: "100%",
+                  transition: "all 0.3s ease"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+              >
+                View Details & Fees
+              </button>
             </div>
           ))}
         </div>
