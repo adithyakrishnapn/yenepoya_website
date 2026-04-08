@@ -82,6 +82,11 @@ export default function CoursesPage() {
             <p className="section-description" style={{ marginTop: "1rem" }}>
               Programs are aligned with the course lineup shown on the Mudipu reference site. Standard booking amount shown below: <strong>₹26,000</strong>.
             </p>
+            <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+              <a href="/assets/brochure.pdf" download className="btn btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+                <span>📄</span> Download Fee Structure & Brochure
+              </a>
+            </div>
           </div>
           <CourseFilter courses={coursesList} />
           <div style={{ marginTop: "2rem", textAlign: "center" }}>
