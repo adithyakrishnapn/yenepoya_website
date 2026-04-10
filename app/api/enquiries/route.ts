@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 type EnquiryPayload = {
   source?: string;
+  campus?: string;
   name?: string;
   username?: string;
   email?: string;
@@ -48,9 +49,11 @@ export async function POST(request: NextRequest) {
   const place = body.place?.trim();
   const course = body.course?.trim();
   const source = body.source?.trim() || "Website enquiry";
+  const campus = body.campus?.trim();
 
   const lines = [
     ["Source", source],
+    ["Campus", campus],
     ["Name", name],
     ["Username", username],
     ["Email", email],
@@ -66,8 +69,8 @@ export async function POST(request: NextRequest) {
     ["Year of Passing", body.yearOfPassing?.trim()]
   ].filter(([, value]) => Boolean(value)) as Array<[string, string]>;
 
-  if (!name || !username || !email || !phone || !course) {
-    return NextResponse.json({ error: "All fields are required" }, { status: 422 });
+  if (!name || !phone || !course) {
+    return NextResponse.json({ error: "Name, phone, and course are required" }, { status: 422 });
   }
 
   const transporter = nodemailer.createTransport({
@@ -83,7 +86,7 @@ export async function POST(request: NextRequest) {
   await transporter.sendMail({
     from: `Yenepoya Website <${config.user}>`,
     to: config.to,
-    replyTo: email,
+    ...(email ? { replyTo: email } : {}),
     subject: `New ${source.toLowerCase()} from ${name}`,
     text: lines.map(([label, value]) => `${label}: ${value}`).join("\n"),
     html: `
