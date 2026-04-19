@@ -227,7 +227,7 @@ export function KnowYourFeesForm() {
       {error ? <p style={{ margin: 0, color: "#b42318", fontSize: "0.92rem" }}>{error}</p> : null}
 
       <button className="button button-primary" type="submit" disabled={submitting} style={{ width: "100%", marginTop: "0.5rem" }}>
-        {submitting ? "Please wait..." : "Contact Student Counsellor on WhatsApp"}
+        {submitting ? "Please wait..." : "Contact Student Counsellor"}
       </button>
     </form>
   );
