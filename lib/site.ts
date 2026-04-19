@@ -28,7 +28,7 @@ export const siteConfig = {
     "research and innovation"
   ],
   contactEmail: "yiascmmudipu@gmail.com",
-  phone: "",
+  phone: "9686267744",
   ogImage: "/assets/hero_campus_banner.png"
 };
 

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_COUNSELLOR_NUMBER ?? "919999999999";
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_COUNSELLOR_NUMBER ?? "9686267744";
 
 type CampusKey = "bangalore" | "mangalore" | "moodbidri" | "mudipu" | "zulekha";
 
