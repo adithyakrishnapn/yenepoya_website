@@ -1,25 +1,57 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { recordPerformanceEvent } from "@/lib/performance";
+
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_COUNSELLOR_NUMBER ?? "9686267744";
 
 export function LeadPopup() {
   const [show, setShow] = useState(false);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [place, setPlace] = useState("");
-  const [course, setCourse] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const pathname = usePathname();
+
+  const blogLabel = useMemo(() => {
+    if (!pathname || pathname === "/blog") {
+      return "Blog index";
+    }
+
+    const slug = pathname.split("/").filter(Boolean).pop() ?? "blog";
+    return slug.replace(/-/g, " ");
+  }, [pathname]);
 
   useEffect(() => {
-    // Only show if they haven't seen it
     if (!localStorage.getItem("hasSeenLeadPopup")) {
-      // Show after a tiny delay so it feels like a popup
       const timer = setTimeout(() => setShow(true), 1500);
       return () => clearTimeout(timer);
     }
   }, []);
+
+  useEffect(() => {
+    if (!pathname || !pathname.startsWith("/blog")) {
+      return;
+    }
+
+    const storageKey = `blog-visit-tracked:${pathname}`;
+    if (localStorage.getItem(storageKey)) {
+      return;
+    }
+
+    localStorage.setItem(storageKey, "true");
+
+    void recordPerformanceEvent({
+      kind: "visit",
+      source: "Blog visit",
+      blogSlug: pathname === "/blog" ? "index" : pathname.split("/").filter(Boolean).pop(),
+      blogTitle: blogLabel,
+      path: pathname,
+      referrer: document.referrer || "Direct"
+    });
+  }, [blogLabel, pathname]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,13 +64,11 @@ export function LeadPopup() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          source: "First visit popup enquiry",
+          source: `Blog details popup - ${blogLabel}`,
           name,
           username: name,
-          email,
           phone,
-          place,
-          course
+          message: `Requested WhatsApp details from ${blogLabel}`
         })
       });
 
@@ -49,9 +79,23 @@ export function LeadPopup() {
         return;
       }
 
-      setMessage("Thank you! Our admissions team will contact you shortly.");
+      await recordPerformanceEvent({
+        kind: "lead",
+        source: `Blog details popup - ${blogLabel}`,
+        name,
+        phone,
+        blogTitle: blogLabel,
+        path: pathname || "/blog",
+        message: `Requested WhatsApp details from ${blogLabel}`
+      });
+
+      const whatsappText = encodeURIComponent(`Hello, I would like details about ${blogLabel}.\nName: ${name}\nWhatsApp: ${phone}`);
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${whatsappText}`;
+
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+      setMessage("Thank you. Opening WhatsApp now.");
       localStorage.setItem("hasSeenLeadPopup", "true");
-      setTimeout(() => setShow(false), 1600);
+      setTimeout(() => setShow(false), 1400);
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Failed to send enquiry");
     } finally {
@@ -123,13 +167,13 @@ export function LeadPopup() {
           }}
         >
           <p style={{ margin: 0, fontSize: "0.78rem", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 700, color: "var(--primary)" }}>
-            Admissions Assistance
+            Get Details on WhatsApp
           </p>
           <h2 style={{ fontSize: "1.45rem", color: "var(--primary)", margin: "0.25rem 0 0.35rem", lineHeight: 1.2 }}>
-            Welcome to Yenepoya
+            Need course details for {blogLabel}?
           </h2>
           <p className="text-soft" style={{ margin: 0, fontSize: "0.9rem" }}>
-            Share your details and our counselor will contact you with course and admission guidance.
+            Leave your WhatsApp number and our counsellor will reach out with the right information.
           </p>
         </div>
 
@@ -139,28 +183,8 @@ export function LeadPopup() {
             <input type="text" required className="input" style={{ padding: "0.5rem" }} placeholder="Enter Full Name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div>
-            <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Email Address</label>
-            <input type="email" required className="input" style={{ padding: "0.5rem" }} placeholder="Enter Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <div>
-            <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Phone Number</label>
-            <input type="tel" required className="input" style={{ padding: "0.5rem" }} placeholder="Enter phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-          </div>
-          <div>
-            <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Place</label>
-            <input type="text" required className="input" style={{ padding: "0.5rem" }} placeholder="Enter your city or place" value={place} onChange={(e) => setPlace(e.target.value)} />
-          </div>
-          <div>
-            <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>Course</label>
-            <select required className="input" style={{ padding: "0.5rem" }} value={course} onChange={(e) => setCourse(e.target.value)}>
-              <option value="" disabled>Select your course</option>
-              <option value="BCA Artificial Intelligence & DevOps">BCA Artificial Intelligence & DevOps</option>
-              <option value="BCA Cyber Security">BCA Cyber Security</option>
-              <option value="BCA Data Science">BCA Data Science</option>
-              <option value="BBA Aviation & Logistics">BBA Aviation & Logistics</option>
-              <option value="BBA Finance">BBA Finance</option>
-              <option value="MBA">MBA</option>
-            </select>
+            <label className="form-label" style={{ textAlign: "left", display: "block", fontSize: "0.85rem", marginBottom: "0.25rem" }}>WhatsApp Number</label>
+            <input type="tel" required className="input" style={{ padding: "0.5rem" }} placeholder="Enter WhatsApp number" value={phone} onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))} />
           </div>
           {error ? <p style={{ margin: 0, color: "#b42318", fontSize: "0.9rem" }}>{error}</p> : null}
           {message ? <p style={{ margin: 0, color: "var(--primary)", fontSize: "0.9rem" }}>{message}</p> : null}
@@ -178,7 +202,7 @@ export function LeadPopup() {
               boxShadow: "0 10px 24px rgba(15, 76, 129, 0.24)"
             }}
           >
-            {submitting ? "Sending..." : "Submit Details"}
+            {submitting ? "Sending..." : "Get Details on WhatsApp"}
           </button>
         </form>
       </div>

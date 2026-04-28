@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { recordPerformanceEvent } from "@/lib/performance";
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_COUNSELLOR_NUMBER ?? "9686267744";
 
@@ -123,6 +124,17 @@ export function KnowYourFeesForm() {
         setError(data.error ?? "Could not submit enquiry. Please try again.");
         return;
       }
+
+      await recordPerformanceEvent({
+        kind: "lead",
+        source: "Know your fees enquiry",
+        name,
+        phone,
+        place,
+        course,
+        campus: selectedCampus?.label,
+        message: "WhatsApp counsellor request from Know Your Fees page"
+      });
 
       window.location.assign(whatsappUrl);
     } catch (submissionError) {

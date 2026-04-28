@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllBlogs } from "@/lib/blogs";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  serverTimestamp,
+  where
+} from "firebase/firestore";
+import { db } from "@/lib/firebase/client";
+import { getAllBlogs, validateBlogPayload } from "@/lib/blogs";
 
 export const dynamic = "force-dynamic";
 
@@ -9,9 +18,29 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  void request;
-  return NextResponse.json(
-    { error: "Use admin dashboard client flow to create blogs." },
-    { status: 405 }
-  );
+  if (!db) {
+    return NextResponse.json({ error: "Firebase Firestore is not configured" }, { status: 500 });
+  }
+
+  const body = await request.json();
+  const { errors, value } = validateBlogPayload(body);
+
+  if (errors.length) {
+    return NextResponse.json({ error: errors[0] }, { status: 422 });
+  }
+
+  const duplicateQuery = query(collection(db, "blogs"), where("slug", "==", value.slug));
+  const duplicateSnap = await getDocs(duplicateQuery);
+  if (!duplicateSnap.empty) {
+    return NextResponse.json({ error: "slug already exists" }, { status: 409 });
+  }
+
+  const docRef = await addDoc(collection(db, "blogs"), {
+    ...value,
+    status: value.status ?? "published",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+
+  return NextResponse.json({ success: true, data: { id: docRef.id, ...value } }, { status: 200 });
 }

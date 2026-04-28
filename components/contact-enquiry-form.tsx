@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { recordPerformanceEvent } from "@/lib/performance";
 
 export function ContactEnquiryForm() {
   const [name, setName] = useState("");
@@ -41,6 +42,17 @@ export function ContactEnquiryForm() {
         setError(data.error ?? "Failed to send enquiry");
         return;
       }
+
+      void recordPerformanceEvent({
+        kind: "lead",
+        source: "Contact enquiry",
+        name,
+        email,
+        phone,
+        place,
+        course,
+        message
+      });
 
       setSuccess("Thank you. Our admissions team will contact you shortly.");
       setName("");

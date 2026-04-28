@@ -5,7 +5,6 @@ import { Preloader } from "@/components/preloader";
 import MouseCursor from "@/components/mouse-cursor";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { LeadPopup } from "@/components/lead-popup";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 const displayFont = Cormorant_Garamond({
@@ -69,7 +68,6 @@ export default function RootLayout({
           <main>{children}</main>
           <SiteFooter />
         </div>
-        <LeadPopup />
       </body>
     </html>
   );

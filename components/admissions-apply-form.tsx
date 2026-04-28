@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { recordPerformanceEvent } from "@/lib/performance";
 
 export function AdmissionsApplyForm() {
   const [name, setName] = useState("");
@@ -53,6 +54,18 @@ export function AdmissionsApplyForm() {
         setError(data.error ?? "Failed to send application");
         return;
       }
+
+      void recordPerformanceEvent({
+        kind: "lead",
+        source: "Admission application",
+        name,
+        email,
+        phone,
+        place,
+        course,
+        message,
+        blogTitle: "Admission application"
+      });
 
       setSuccess("Thank you. Your application request has been sent.");
       setName("");
