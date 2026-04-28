@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  serverTimestamp
-} from "firebase/firestore";
-import { db } from "@/lib/firebase/client";
+import { randomUUID } from "crypto";
+import { readFile, writeFile, mkdir } from "fs/promises";
+import path from "path";
 
 export const dynamic = "force-dynamic";
+
+const STORE_DIR = path.join(process.cwd(), "data");
+const STORE_FILE = path.join(STORE_DIR, "performance-events.json");
 
 type PerformanceEventPayload = {
   kind?: "lead" | "visit";
@@ -33,60 +29,39 @@ type PerformanceEventRecord = PerformanceEventPayload & {
   createdAt: string;
 };
 
-function toIsoTimestamp(value: unknown) {
-  if (value && typeof value === "object" && "toDate" in value && typeof (value as { toDate?: () => Date }).toDate === "function") {
-    return (value as { toDate: () => Date }).toDate().toISOString();
+async function readStore() {
+  try {
+    const raw = await readFile(STORE_FILE, "utf8");
+    const parsed = JSON.parse(raw) as PerformanceEventRecord[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [] as PerformanceEventRecord[];
   }
+}
 
-  return new Date().toISOString();
+async function writeStore(events: PerformanceEventRecord[]) {
+  await mkdir(STORE_DIR, { recursive: true });
+  await writeFile(STORE_FILE, JSON.stringify(events, null, 2), "utf8");
 }
 
 export async function GET() {
-  if (!db) {
-    return NextResponse.json({ data: [] as PerformanceEventRecord[] }, { status: 200 });
-  }
-
   try {
-    const snap = await getDocs(query(collection(db, "performance_events"), orderBy("createdAt", "desc"), limit(100)));
-    const data = snap.docs.map((item) => {
-      const raw = item.data() as Record<string, unknown>;
+    const data = await readStore();
 
-      return {
-        id: item.id,
-        kind: raw.kind === "visit" ? "visit" : "lead",
-        source: typeof raw.source === "string" ? raw.source : "Unknown source",
-        name: typeof raw.name === "string" ? raw.name : "",
-        email: typeof raw.email === "string" ? raw.email : "",
-        phone: typeof raw.phone === "string" ? raw.phone : "",
-        place: typeof raw.place === "string" ? raw.place : "",
-        course: typeof raw.course === "string" ? raw.course : "",
-        campus: typeof raw.campus === "string" ? raw.campus : "",
-        blogSlug: typeof raw.blogSlug === "string" ? raw.blogSlug : "",
-        blogTitle: typeof raw.blogTitle === "string" ? raw.blogTitle : "",
-        path: typeof raw.path === "string" ? raw.path : "",
-        referrer: typeof raw.referrer === "string" ? raw.referrer : "",
-        message: typeof raw.message === "string" ? raw.message : "",
-        createdAt: toIsoTimestamp(raw.createdAt)
-      };
-    }) as PerformanceEventRecord[];
-
-    return NextResponse.json({ data }, { status: 200 });
+    return NextResponse.json({ data: data.slice().sort((left, right) => right.createdAt.localeCompare(left.createdAt)).slice(0, 100) }, { status: 200 });
   } catch {
     return NextResponse.json({ data: [] as PerformanceEventRecord[] }, { status: 200 });
   }
 }
 
 export async function POST(request: NextRequest) {
-  if (!db) {
-    return NextResponse.json({ success: true }, { status: 200 });
-  }
-
   const body = (await request.json()) as PerformanceEventPayload;
   const kind = body.kind === "visit" ? "visit" : "lead";
   const source = body.source?.trim() || "Unknown source";
 
   try {
-    await addDoc(collection(db, "performance_events"), {
+    const nextEvent: PerformanceEventRecord = {
+      id: randomUUID(),
       kind,
       source,
       name: body.name?.trim() || "",
@@ -100,8 +75,11 @@ export async function POST(request: NextRequest) {
       path: body.path?.trim() || "",
       referrer: body.referrer?.trim() || "",
       message: body.message?.trim() || "",
-      createdAt: serverTimestamp()
-    });
+      createdAt: new Date().toISOString()
+    };
+
+    const existing = await readStore();
+    await writeStore([nextEvent, ...existing]);
   } catch {
     return NextResponse.json({ success: true }, { status: 200 });
   }
