@@ -23,14 +23,22 @@ export type PerformanceEventRecord = PerformanceEventInput & {
   createdAt: string;
 };
 
+type ApiError = { error?: string };
+
 export async function recordPerformanceEvent(input: PerformanceEventInput) {
   try {
-    await fetch("/api/performance", {
+    const response = await fetch("/api/performance", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input)
     });
-  } catch {
+
+    if (!response.ok) {
+      const data = (await response.json().catch(() => ({}))) as ApiError;
+      throw new Error(data.error ?? "Failed to record performance event");
+    }
+  } catch (error) {
+    console.error("recordPerformanceEvent failed:", error);
     return null;
   }
 }
@@ -39,11 +47,14 @@ export async function fetchPerformanceEvents() {
   try {
     const response = await fetch("/api/performance", { cache: "no-store" });
     if (!response.ok) {
-      return [] as PerformanceEventRecord[];
+      const data = (await response.json().catch(() => ({}))) as ApiError;
+      throw new Error(data.error ?? "Failed to fetch performance events");
     }
+
     const data = (await response.json()) as { data?: PerformanceEventRecord[] };
     return data.data ?? [];
-  } catch {
-    return [] as PerformanceEventRecord[];
+  } catch (error) {
+    console.error("fetchPerformanceEvents failed:", error);
+    throw error;
   }
 }
