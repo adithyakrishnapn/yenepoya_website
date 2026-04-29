@@ -5,6 +5,7 @@ import type { CSSProperties, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/components/admin/auth-provider";
 import type { BlogPost } from "@/lib/blogs";
+import { recordPerformanceEvent } from "@/lib/performance";
 import { fetchPerformanceEvents as loadPerformanceEvents } from "@/lib/performance";
 import type { PerformanceEventRecord } from "@/lib/performance";
 
@@ -96,6 +97,27 @@ export function AdminDashboard() {
       setPerformanceError(error instanceof Error ? error.message : "Failed to load performance data");
     } finally {
       setPerformanceLoading(false);
+    }
+  }
+
+  async function sendTestEvent() {
+    setPerformanceError("");
+    setMessage("");
+
+    try {
+      await recordPerformanceEvent({
+        kind: "visit",
+        source: "Admin dashboard test event",
+        blogSlug: "dashboard-test",
+        blogTitle: "Dashboard test event",
+        path: "/admin/dashboard",
+        referrer: "Admin dashboard"
+      });
+
+      setMessage("Test event sent. Refreshing analytics...");
+      await fetchPerformanceEvents();
+    } catch (error) {
+      setPerformanceError(error instanceof Error ? error.message : "Failed to send test event");
     }
   }
 
@@ -283,6 +305,7 @@ export function AdminDashboard() {
               <button className="button button-primary" onClick={() => scrollToSection("create-blog")}>Create Blog</button>
               <button className="button button-secondary" onClick={() => scrollToSection("manage-blogs")}>Manage Blog</button>
               <button className="button button-secondary" onClick={() => scrollToSection("performance-dashboard")}>View Analytics</button>
+              <button className="button button-secondary" type="button" onClick={() => void sendTestEvent()}>Send Test Event</button>
             </div>
 
             <div className="grid grid-3" style={{ gap: "0.9rem" }}>
@@ -371,6 +394,7 @@ export function AdminDashboard() {
 
             {performanceError ? <p style={{ margin: 0, color: "#b42318" }}>{performanceError}</p> : null}
             {performanceLoading ? <p style={{ margin: 0, color: "var(--text-soft)" }}>Loading performance data...</p> : null}
+            {message ? <p style={{ margin: 0, color: "var(--accent)" }}>{message}</p> : null}
           </div>
 
           <div className="card card-pad" style={{ display: "grid", gap: "0.9rem" }}>
