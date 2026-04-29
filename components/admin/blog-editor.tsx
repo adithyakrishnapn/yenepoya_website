@@ -1,8 +1,6 @@
 "use client";
 
 import { useMemo, useState, type CSSProperties, type FormEvent } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase/client";
 
 function slugify(value: string) {
   return value
@@ -48,23 +46,32 @@ export function BlogEditor() {
       seoTitle: seoTitle || title,
       seoDescription: seoDescription || excerpt,
       seoKeywords: splitKeywords(seoKeywords),
-      status: "published",
-      publishedAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      status: "published"
     };
 
     try {
-      if (db) {
-        await addDoc(collection(db, "blogs"), payload);
-        setStatus("saved");
-        setMessage("Blog saved to Firestore. Sitemap and detail pages will pick it up automatically.");
-      } else {
-        const drafts = JSON.parse(window.localStorage.getItem("yenepoya_blog_drafts") ?? "[]") as typeof payload[];
-        drafts.unshift(payload);
-        window.localStorage.setItem("yenepoya_blog_drafts", JSON.stringify(drafts));
-        setStatus("saved");
-        setMessage("Firebase is not configured yet, so this draft was saved locally for preview.");
+      const response = await fetch("/api/blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save blog");
       }
+
+      setStatus("saved");
+      setMessage("Blog saved successfully. Sitemap and detail pages will pick it up automatically.");
+      
+      // Reset form
+      setTitle("");
+      setSlug("");
+      setExcerpt("");
+      setCategory("Campus Life");
+      setSeoTitle("");
+      setSeoDescription("");
+      setSeoKeywords("Yenepoya University Mudipu, campus blog, higher education");
+      setHtmlContent("<p>Write HTML content for the article here.</p>");
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "Failed to save blog post.");
