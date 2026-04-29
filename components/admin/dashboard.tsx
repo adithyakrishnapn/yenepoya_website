@@ -286,13 +286,13 @@ export function AdminDashboard() {
 
   return (
     <section className="section" style={{ paddingTop: "2.5rem" }}>
-      <div className="container grid" style={{ gap: "1rem" }}>
+      <div className="container grid" style={{ gap: "1rem", maxWidth: "1200px", margin: "0 auto", overflowX: "hidden" }}>
         <div className="card card-pad" style={dashboardShellStyle}>
           <div style={{ display: "grid", gap: "1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", flexWrap: "wrap" }}>
               <div style={{ maxWidth: "62ch" }}>
                 <span className="kicker">Admin dashboard</span>
-                <h1 className="section-title" style={{ marginTop: "0.7rem", fontSize: "2.6rem" }}>Dashboard for blog growth and leads</h1>
+                <h1 className="section-title" style={{ marginTop: "0.7rem", fontSize: "2.2rem" }}>Dashboard for blog growth and leads</h1>
                 <p style={{ margin: "0.4rem 0 0", color: "var(--text-soft)", fontSize: "1.02rem" }}>
                   Manage content, publish new articles, and monitor how many visitors, form fills, and WhatsApp leads your blogs are generating.
                 </p>
@@ -377,8 +377,8 @@ export function AdminDashboard() {
                     {topVisitedBlogEntries.map(([title, count]) => (
                       <div key={title} style={{ display: "grid", gap: "0.35rem" }}>
                         <div className="meta-row" style={{ justifyContent: "space-between", gap: "0.75rem" }}>
-                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
-                          <strong>{count}</strong>
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "normal", wordBreak: "break-word", maxWidth: "70%" }}>{title}</span>
+                          <strong style={{ flexShrink: 0 }}>{count}</strong>
                         </div>
                         <div style={barTrackStyle}>
                           <div style={{ ...barFillStyle, width: `${Math.max((count / Math.max(topVisitedBlogEntries[0]?.[1] ?? 1, 1)) * 100, 12)}%`, background: "linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%)" }} />
@@ -406,12 +406,12 @@ export function AdminDashboard() {
             <div className="grid" style={{ gap: "0.75rem" }}>
               {performanceEvents.length ? (
                 performanceEvents.slice(0, 8).map((event) => (
-                  <article key={event.id} style={activityCardStyle}>
+                  <article key={event.id} style={{ ...activityCardStyle, minWidth: 0, overflowWrap: "anywhere" }}>
                     <div className="meta-row" style={{ justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
                       <strong>{event.kind === "lead" ? "Lead submission" : "Blog visit"}</strong>
                       <span style={{ color: "var(--text-soft)" }}>{new Date(event.createdAt).toLocaleString("en-IN")}</span>
                     </div>
-                    <p style={{ margin: 0, color: "var(--text-soft)" }}>{event.source}</p>
+                    <p style={{ margin: 0, color: "var(--text-soft)", overflowWrap: "anywhere" }}>{event.source}</p>
                     {event.kind === "lead" ? (
                       <div className="grid grid-2" style={{ gap: "0.35rem" }}>
                         <p style={{ margin: 0 }}>Name: {event.name || "—"}</p>
@@ -571,7 +571,8 @@ const activityCardStyle: CSSProperties = {
   background: "#fff",
   border: "1px solid rgba(19,34,56,0.08)",
   display: "grid",
-  gap: "0.55rem"
+  gap: "0.55rem",
+  minWidth: 0
 };
 
 const blogCardStyle: CSSProperties = {
