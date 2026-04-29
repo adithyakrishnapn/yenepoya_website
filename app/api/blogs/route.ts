@@ -1,62 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomUUID } from "crypto";
-import { readFile, writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { adminDb } from "@/lib/firebase/admin";
 import { getAllBlogs, validateBlogPayload } from "@/lib/blogs";
 
 export const dynamic = "force-dynamic";
 
-const STORE_DIR = path.join(process.cwd(), "data");
-const STORE_FILE = path.join(STORE_DIR, "blogs.json");
-
-type BlogRecord = {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  image: string;
-  category?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  seoKeywords?: string[];
-  status: "published" | "draft";
-  createdAt: string;
-  updatedAt?: string;
-};
-
-async function readBlogs() {
-  try {
-    const raw = await readFile(STORE_FILE, "utf8");
-    const parsed = JSON.parse(raw) as BlogRecord[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [] as BlogRecord[];
-  }
-}
-
-async function writeBlogs(blogs: BlogRecord[]) {
-  await mkdir(STORE_DIR, { recursive: true });
-  await writeFile(STORE_FILE, JSON.stringify(blogs, null, 2), "utf8");
-}
-
 export async function GET() {
-  try {
-    // Try to get from local file first, fallback to Firestore REST API
-    const localBlogs = await readBlogs();
-    if (localBlogs.length > 0) {
-      return NextResponse.json({ data: localBlogs }, { status: 200 });
-    }
-    
-    // Fallback to Firestore REST API
+  if (!adminDb) {
     const blogs = await getAllBlogs();
     return NextResponse.json({ data: blogs }, { status: 200 });
+  }
+
+  try {
+    const snap = await adminDb.collection("blogs").get();
+    const blogs = snap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    return NextResponse.json({ data: blogs }, { status: 200 });
   } catch {
-    return NextResponse.json({ data: [] }, { status: 200 });
+    const blogs = await getAllBlogs();
+    return NextResponse.json({ data: blogs }, { status: 200 });
   }
 }
 
 export async function POST(request: NextRequest) {
+  if (!adminDb) {
+    return NextResponse.json({ error: "Firebase Admin not configured" }, { status: 500 });
+  }
+
   try {
     const body = await request.json();
     const { errors, value } = validateBlogPayload(body);
@@ -66,13 +37,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for duplicate slug
-    const existing = await readBlogs();
-    if (existing.some((blog) => blog.slug === value.slug)) {
+    const existing = await adminDb
+      .collection("blogs")
+      .where("slug", "==", value.slug)
+      .get();
+
+    if (!existing.empty) {
       return NextResponse.json({ error: "slug already exists" }, { status: 409 });
     }
 
-    const newBlog: BlogRecord = {
-      id: randomUUID(),
+    const docRef = await adminDb.collection("blogs").add({
       title: value.title,
       slug: value.slug,
       excerpt: value.excerpt,
@@ -82,13 +56,15 @@ export async function POST(request: NextRequest) {
       seoTitle: value.seoTitle,
       seoDescription: value.seoDescription,
       seoKeywords: value.seoKeywords,
-      status: (value.status ?? "published") as "published" | "draft",
+      status: value.status ?? "published",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    };
+    });
 
-    await writeBlogs([newBlog, ...existing]);
-    return NextResponse.json({ success: true, data: newBlog }, { status: 200 });
+    return NextResponse.json(
+      { success: true, data: { id: docRef.id, ...value } },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json({ error: "Failed to create blog" }, { status: 500 });
   }

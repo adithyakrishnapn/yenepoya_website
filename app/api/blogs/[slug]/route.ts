@@ -1,45 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFile, writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { adminDb } from "@/lib/firebase/admin";
 import { getBlogBySlug, validateBlogPayload } from "@/lib/blogs";
 
 export const dynamic = "force-dynamic";
 
-const STORE_DIR = path.join(process.cwd(), "data");
-const STORE_FILE = path.join(STORE_DIR, "blogs.json");
-
 type Params = { params: Promise<{ slug: string }> };
-
-type BlogRecord = {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  image: string;
-  category?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  seoKeywords?: string[];
-  status: "published" | "draft";
-  createdAt: string;
-  updatedAt?: string;
-};
-
-async function readBlogs() {
-  try {
-    const raw = await readFile(STORE_FILE, "utf8");
-    const parsed = JSON.parse(raw) as BlogRecord[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [] as BlogRecord[];
-  }
-}
-
-async function writeBlogs(blogs: BlogRecord[]) {
-  await mkdir(STORE_DIR, { recursive: true });
-  await writeFile(STORE_FILE, JSON.stringify(blogs, null, 2), "utf8");
-}
 
 export async function GET(_: NextRequest, { params }: Params) {
   const { slug } = await params;
@@ -55,40 +20,51 @@ export async function GET(_: NextRequest, { params }: Params) {
 export async function PATCH(request: NextRequest, { params }: Params) {
   const { slug } = await params;
 
+  if (!adminDb) {
+    return NextResponse.json({ error: "Firebase Admin not configured" }, { status: 500 });
+  }
+
   try {
-    const blogs = await readBlogs();
-    const currentIndex = blogs.findIndex((b) => b.slug === slug);
-    
-    if (currentIndex < 0) {
+    // Find blog by slug
+    const snap = await adminDb
+      .collection("blogs")
+      .where("slug", "==", slug)
+      .get();
+
+    if (snap.empty) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
 
+    const currentDoc = snap.docs[0];
     const body = await request.json();
     const { errors, value } = validateBlogPayload(body, true);
+
     if (errors.length) {
       return NextResponse.json({ error: errors[0] }, { status: 422 });
     }
 
     const nextSlug = value.slug || slug;
     if (nextSlug !== slug) {
-      const hasDuplicate = blogs.some((b, idx) => idx !== currentIndex && b.slug === nextSlug);
-      if (hasDuplicate) {
-        return NextResponse.json({ error: "slug already exists" }, { status: 409 });
+      const duplicateSnap = await adminDb
+        .collection("blogs")
+        .where("slug", "==", nextSlug)
+        .get();
+
+      if (!duplicateSnap.empty) {
+        const hasDifferent = duplicateSnap.docs.some((doc) => doc.id !== currentDoc.id);
+        if (hasDifferent) {
+          return NextResponse.json({ error: "slug already exists" }, { status: 409 });
+        }
       }
     }
 
-    const updated: BlogRecord = {
-      ...blogs[currentIndex],
+    await currentDoc.ref.update({
       ...value,
       slug: nextSlug,
-      status: (value.status ?? blogs[currentIndex].status) as "published" | "draft",
       updatedAt: new Date().toISOString()
-    };
+    });
 
-    blogs[currentIndex] = updated;
-    await writeBlogs(blogs);
-
-    return NextResponse.json({ success: true, data: updated }, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: "Failed to update blog" }, { status: 500 });
   }
@@ -97,16 +73,21 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 export async function DELETE(_: NextRequest, { params }: Params) {
   const { slug } = await params;
 
+  if (!adminDb) {
+    return NextResponse.json({ error: "Firebase Admin not configured" }, { status: 500 });
+  }
+
   try {
-    const blogs = await readBlogs();
-    const currentIndex = blogs.findIndex((b) => b.slug === slug);
-    
-    if (currentIndex < 0) {
+    const snap = await adminDb
+      .collection("blogs")
+      .where("slug", "==", slug)
+      .get();
+
+    if (snap.empty) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
 
-    blogs.splice(currentIndex, 1);
-    await writeBlogs(blogs);
+    await snap.docs[0].ref.delete();
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

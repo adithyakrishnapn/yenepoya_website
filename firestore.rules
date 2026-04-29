@@ -9,6 +9,7 @@ service cloud.firestore {
     match /performance_events/{eventId} {
       allow read: if request.auth != null;
       allow create: if request.resource.data.kind in ["lead", "visit"];
+      allow write: if request.auth != null;
     }
   }
 }
