@@ -43,6 +43,14 @@ export async function recordPerformanceEvent(input: PerformanceEventInput) {
   }
 }
 
+export type PerformanceStats = {
+  totalVisits: number;
+  totalLeads: number;
+  uniqueContacts: number;
+  topLeadSources: [string, number][];
+  topVisitedBlogEntries: [string, number][];
+};
+
 export async function fetchPerformanceEvents() {
   try {
     const response = await fetch("/api/performance", { cache: "no-store" });
@@ -51,8 +59,21 @@ export async function fetchPerformanceEvents() {
       throw new Error(data.error ?? "Failed to fetch performance events");
     }
 
-    const data = (await response.json()) as { data?: PerformanceEventRecord[] };
-    return data.data ?? [];
+    const json = (await response.json()) as {
+      data?: PerformanceEventRecord[];
+      stats?: PerformanceStats;
+    };
+
+    return {
+      events: json.data ?? [],
+      stats: json.stats ?? {
+        totalVisits: 0,
+        totalLeads: 0,
+        uniqueContacts: 0,
+        topLeadSources: [],
+        topVisitedBlogEntries: []
+      }
+    };
   } catch (error) {
     console.error("fetchPerformanceEvents failed:", error);
     throw error;

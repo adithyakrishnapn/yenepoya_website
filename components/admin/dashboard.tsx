@@ -7,7 +7,7 @@ import { useAdminAuth } from "@/components/admin/auth-provider";
 import type { BlogPost } from "@/lib/blogs";
 import { recordPerformanceEvent } from "@/lib/performance";
 import { fetchPerformanceEvents as loadPerformanceEvents } from "@/lib/performance";
-import type { PerformanceEventRecord } from "@/lib/performance";
+import type { PerformanceEventRecord, PerformanceStats } from "@/lib/performance";
 
 type PerformanceEvent = PerformanceEventRecord;
 
@@ -48,6 +48,13 @@ export function AdminDashboard() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [performanceEvents, setPerformanceEvents] = useState<PerformanceEvent[]>([]);
+  const [performanceStats, setPerformanceStats] = useState<PerformanceStats>({
+    totalVisits: 0,
+    totalLeads: 0,
+    uniqueContacts: 0,
+    topLeadSources: [],
+    topVisitedBlogEntries: []
+  });
   const [performanceLoading, setPerformanceLoading] = useState(false);
   const [performanceError, setPerformanceError] = useState("");
 
@@ -91,8 +98,9 @@ export function AdminDashboard() {
     setPerformanceError("");
 
     try {
-      const next = await loadPerformanceEvents();
-      setPerformanceEvents(next);
+      const { events, stats } = await loadPerformanceEvents();
+      setPerformanceEvents(events);
+      setPerformanceStats(stats);
     } catch (error) {
       setPerformanceError(error instanceof Error ? error.message : "Failed to load performance data");
     } finally {
@@ -233,40 +241,21 @@ export function AdminDashboard() {
     return null;
   }
 
-  const leadEvents = performanceEvents.filter((event) => event.kind === "lead");
-  const visitEvents = performanceEvents.filter((event) => event.kind === "visit");
-  const uniqueContacts = new Set(
-    leadEvents.map((event) => event.email || event.phone || event.name || event.source)
-  ).size;
-
-  const leadSources = leadEvents.reduce<Record<string, number>>((accumulator, event) => {
-    accumulator[event.source] = (accumulator[event.source] ?? 0) + 1;
-    return accumulator;
-  }, {});
-
-  const topLeadSources = Object.entries(leadSources)
-    .sort((left, right) => right[1] - left[1])
-    .slice(0, 4);
-
-  const topVisitedBlogs = visitEvents.reduce<Record<string, number>>((accumulator, event) => {
-    const key = event.blogTitle || event.blogSlug || event.path || event.source;
-    accumulator[key] = (accumulator[key] ?? 0) + 1;
-    return accumulator;
-  }, {});
-
-  const topVisitedBlogEntries = Object.entries(topVisitedBlogs)
-    .sort((left, right) => right[1] - left[1])
-    .slice(0, 5);
+  const totalLeads = performanceStats.totalLeads;
+  const totalVisits = performanceStats.totalVisits;
+  const uniqueContacts = performanceStats.uniqueContacts;
+  const topLeadSources = performanceStats.topLeadSources;
+  const topVisitedBlogEntries = performanceStats.topVisitedBlogEntries;
 
   const performanceCards = [
     {
       label: "Lead submissions",
-      value: leadEvents.length,
+      value: totalLeads,
       note: "Forms, WhatsApp leads, and direct enquiries"
     },
     {
       label: "Blog visits",
-      value: visitEvents.length,
+      value: totalVisits,
       note: "Tracked visits across all blog pages"
     },
     {
@@ -277,8 +266,8 @@ export function AdminDashboard() {
   ];
 
   const visualBars = [
-    { label: "Visits", value: visitEvents.length, color: "var(--primary)" },
-    { label: "Leads", value: leadEvents.length, color: "var(--accent)" },
+    { label: "Visits", value: totalVisits, color: "var(--primary)" },
+    { label: "Leads", value: totalLeads, color: "var(--accent)" },
     { label: "Unique", value: uniqueContacts, color: "var(--accent-dark)" }
   ];
 
